@@ -1,0 +1,20 @@
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\kave_project.exe.config
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\kave_project.exe
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\kave_project.pdb
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\Antlr4.Runtime.Standard.dll
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\DotNetZip.dll
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\ICSharpCode.SharpZipLib.dll
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\KaVE.Commons.dll
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\Newtonsoft.Json.dll
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\DotNetZip.xml
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\ICSharpCode.SharpZipLib.xml
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\bin\Debug\Newtonsoft.Json.xml
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\obj\Debug\kave_project.csprojResolveAssemblyReference.cache
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\obj\Debug\kave_project.Form1.resources
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\obj\Debug\kave_project.Properties.Resources.resources
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\obj\Debug\kave_project.csproj.GenerateResource.Cache
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\obj\Debug\kave_project.exe
+c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\obj\Debug\kave_project.pdb
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\kave_project.exe.config
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.exe
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.pdb
