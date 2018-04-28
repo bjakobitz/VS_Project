@@ -32,6 +32,8 @@ namespace kave_project
             Dictionary<String,Command> commands = new Dictionary<String,Command>();
             Command command;
             Object[] row;
+            int total_cmds = 0;
+            int total = 0;
 
             btn_run.Enabled = false;
             String eventsDir = tb_eventDir.Text;
@@ -73,6 +75,7 @@ namespace kave_project
                             if (pb_quick.Value == 100) 
                                 pb_quick.Value = 0;
                             cmd = process(writer,e);
+                            total++;
                             if (cmd.Length > 0)
                             {
                                 commands.TryGetValue(cmd, out command);
@@ -88,6 +91,7 @@ namespace kave_project
                             }
 
                             pb_quick.Value += 1;
+                            lbl_time.Text = watch.Elapsed.ToString(@"hh\:mm\:ss");
                             writer.Flush();
                             Application.DoEvents();
                         }
@@ -107,7 +111,18 @@ namespace kave_project
                 row[0] = command.name;
                 row[1] = command.count;
                 dgv_counts.Rows.Add(row);
+                total_cmds++;
             }
+
+            row = new object[2];
+            row[0] = "Total Commands";
+            row[1] = total_cmds;
+            dgv_counts.Rows.Add(row);
+
+            row = new object[2];
+            row[0] = "Total";
+            row[1] = total;
+            dgv_counts.Rows.Add(row);
             btn_run.Enabled = true;
         }
 
