@@ -38,6 +38,7 @@ namespace kave_project
             Console.Write("looking (recursively) for events in folder {0}\n", Path.GetFullPath(eventsDir));
 
             pb_file_progress.Value = 0;
+            pb_quick.Value = 0;
 
             using (StreamWriter writer = new StreamWriter(tb_output.Text, false))
             {
@@ -69,6 +70,8 @@ namespace kave_project
                             var e = ra.GetNext<IDEEvent>();
 
                             // the events can then be processed individually
+                            if (pb_quick.Value == 100) 
+                                pb_quick.Value = 0;
                             cmd = process(writer,e);
                             if (cmd.Length > 0)
                             {
@@ -83,7 +86,8 @@ namespace kave_project
                                     command.incrementCount();
                                 }
                             }
-                            
+
+                            pb_quick.Value += 1;
                             writer.Flush();
                             Application.DoEvents();
                         }

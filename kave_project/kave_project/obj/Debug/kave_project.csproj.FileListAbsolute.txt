@@ -18,3 +18,17 @@ c:\users\brad\documents\visual studio 2012\Projects\kave_project\kave_project\ob
 D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\kave_project.exe.config
 D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.exe
 D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.pdb
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\kave_project.exe
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\kave_project.pdb
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\Antlr4.Runtime.Standard.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\DotNetZip.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\ICSharpCode.SharpZipLib.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\KaVE.Commons.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\Newtonsoft.Json.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\DotNetZip.xml
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\ICSharpCode.SharpZipLib.xml
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\Newtonsoft.Json.xml
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.csprojResolveAssemblyReference.cache
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.Form1.resources
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.Properties.Resources.resources
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.csproj.GenerateResource.Cache

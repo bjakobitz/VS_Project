@@ -41,12 +41,13 @@
             this.dgv_counts = new System.Windows.Forms.DataGridView();
             this.command = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.count = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pb_quick = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_counts)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_run
             // 
-            this.btn_run.Location = new System.Drawing.Point(16, 109);
+            this.btn_run.Location = new System.Drawing.Point(16, 113);
             this.btn_run.Name = "btn_run";
             this.btn_run.Size = new System.Drawing.Size(75, 23);
             this.btn_run.TabIndex = 0;
@@ -138,9 +139,9 @@
             this.dgv_counts.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.command,
             this.count});
-            this.dgv_counts.Location = new System.Drawing.Point(16, 138);
+            this.dgv_counts.Location = new System.Drawing.Point(16, 142);
             this.dgv_counts.Name = "dgv_counts";
-            this.dgv_counts.Size = new System.Drawing.Size(1012, 342);
+            this.dgv_counts.Size = new System.Drawing.Size(1012, 356);
             this.dgv_counts.TabIndex = 10;
             // 
             // command
@@ -157,11 +158,19 @@
             this.count.Name = "count";
             this.count.ReadOnly = true;
             // 
+            // pb_quick
+            // 
+            this.pb_quick.Location = new System.Drawing.Point(97, 113);
+            this.pb_quick.Name = "pb_quick";
+            this.pb_quick.Size = new System.Drawing.Size(296, 23);
+            this.pb_quick.TabIndex = 11;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1040, 492);
+            this.ClientSize = new System.Drawing.Size(1040, 510);
+            this.Controls.Add(this.pb_quick);
             this.Controls.Add(this.dgv_counts);
             this.Controls.Add(this.lbl_time);
             this.Controls.Add(this.lbl_time_lbl);
@@ -196,6 +205,7 @@
         private System.Windows.Forms.DataGridView dgv_counts;
         private System.Windows.Forms.DataGridViewTextBoxColumn command;
         private System.Windows.Forms.DataGridViewTextBoxColumn count;
+        private System.Windows.Forms.ProgressBar pb_quick;
     }
 }
 
