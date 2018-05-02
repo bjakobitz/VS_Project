@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace kave_project
 {
-    class Command
+    class Command : Event
     {
-        private String _name;
         private int _count;
 
-        public String name { get { return _name; } private set {} }
         public int count { get { return _count; } private set {} }
-
+        
         public Command(String name)
         {
             _name = name;
@@ -23,6 +21,11 @@ namespace kave_project
         public void incrementCount()
         {
             _count++;
+        }
+
+        public String ToString()
+        {
+            return "executed command: " + name + " at " + triggeredAt;
         }
     }
 }

@@ -28,12 +28,13 @@ namespace kave_project
         {
             int progressPortion;
             Stopwatch watch = new Stopwatch();
-            String cmd;
-            Dictionary<String,Command> commands = new Dictionary<String,Command>();
-            Command command;
+            Dictionary<String,Developer> developers = new Dictionary<String,Developer>();
             Object[] row;
             int total_cmds = 0;
             int total = 0;
+            String developerId;
+            Event vsEvent;
+            Developer developer;
 
             btn_run.Enabled = false;
             String eventsDir = tb_eventDir.Text;
@@ -74,21 +75,33 @@ namespace kave_project
                             // the events can then be processed individually
                             if (pb_quick.Value == 100) 
                                 pb_quick.Value = 0;
-                            cmd = process(writer,e);
-                            total++;
-                            if (cmd.Length > 0)
+                            developerId = process(writer,e,out vsEvent);
+
+                            developers.TryGetValue(developerId, out developer);
+
+                            if (developer == null)
                             {
-                                commands.TryGetValue(cmd, out command);
-                                if (command == null)
-                                {
-                                    command = new Command(cmd);
-                                    commands.Add(cmd, command);
-                                }
-                                else
-                                {
-                                    command.incrementCount();
-                                }
+                                developer = new Developer(developerId);
+                                developer.addEvent(vsEvent);
+                                developers.Add(developerId, developer);
                             }
+                            else
+                            {
+                                developer.addEvent(vsEvent);
+                            }
+                            //if (cmd.Length > 0)
+                            //{
+                            //    commands.TryGetValue(cmd, out command);
+                            //    if (command == null)
+                            //    {
+                            //        command = new Command(cmd);
+                            //        commands.Add(cmd, command);
+                            //    }
+                            //    else
+                            //    {
+                            //        command.incrementCount();
+                            //    }
+                            //}
 
                             pb_quick.Value += 1;
                             lbl_time.Text = watch.Elapsed.ToString(@"hh\:mm\:ss");
@@ -99,30 +112,41 @@ namespace kave_project
                     
                     pb_file_progress.Value += progressPortion;
                 }
+
+                foreach (KeyValuePair<string, Developer> entry in developers)
+                {
+                    developer = entry.Value;
+
+                    developer.writeEvents(writer);
+                }
+
+                writer.WriteLine("Developer Count: " + developers.Count.ToString());
             }
             watch.Stop();
             pb_file_progress.Value = 100;
             lbl_time.Text = watch.Elapsed.ToString(@"hh\:mm\:ss");
 
-            foreach (KeyValuePair<string, Command> entry in commands)
-            {
-                command = entry.Value;
-                row = new object[2];
-                row[0] = command.name;
-                row[1] = command.count;
-                dgv_counts.Rows.Add(row);
-                total_cmds++;
-            }
+            
 
-            row = new object[2];
-            row[0] = "Total Commands";
-            row[1] = total_cmds;
-            dgv_counts.Rows.Add(row);
+            //foreach (KeyValuePair<string, Command> entry in commands)
+            //{
+            //    command = entry.Value;
+            //    row = new object[2];
+            //    row[0] = command.name;
+            //    row[1] = command.count;
+            //    dgv_counts.Rows.Add(row);
+            //    total_cmds++;
+            //}
 
-            row = new object[2];
-            row[0] = "Total";
-            row[1] = total;
-            dgv_counts.Rows.Add(row);
+            //row = new object[2];
+            //row[0] = "Total Commands";
+            //row[1] = total_cmds;
+            //dgv_counts.Rows.Add(row);
+
+            //row = new object[2];
+            //row[0] = "Total";
+            //row[1] = total;
+            //dgv_counts.Rows.Add(row);
             btn_run.Enabled = true;
         }
 
@@ -150,38 +174,47 @@ namespace kave_project
              * get rid of the casting. For now, this is recommended way to access the
              * contents.
              */
-        private String process(StreamWriter writer, IDEEvent e)
+        private String process(StreamWriter writer, IDEEvent e,out Event vsEvent)
         {
             CommandEvent ce = e as CommandEvent;
             CompletionEvent compE = e as CompletionEvent;
-            String cmd = "";
+            String developerId = "";
 
-            if (ce != null) cmd = process(writer, ce);
+            if (ce != null) developerId = process(writer, ce,out vsEvent);
             //else if (compE != null) process(writer, compE);
-            //else processBasic(writer, e);
-            return cmd;
+            else developerId = processBasic(writer, e,out vsEvent);
+            return developerId;
         }
 
-        private String process(StreamWriter writer, CommandEvent ce)
+        private String process(StreamWriter writer, CommandEvent ce, out Event cmd)
         {
-            writer.WriteLine("found a CommandEvent (id: " + ce.CommandId + ")");
-            return ce.CommandId;
+            //writer.WriteLine("found a CommandEvent (id: " + ce.CommandId + ")");
+            cmd = new Command(ce.CommandId);
+            cmd.triggeredAt = ce.TriggeredAt;
+            
+            return ce.IDESessionUUID;
         }
 
-        private void process(StreamWriter writer, CompletionEvent e)
+        private String process(StreamWriter writer, CompletionEvent e,out Event vsEvent)
         {
             var snapshotOfEnclosingType = e.Context2.SST;
             var enclosingTypeName = snapshotOfEnclosingType.EnclosingType.FullName;
+            vsEvent = new Event("temp");
 
-            writer.WriteLine("found a CompletionEvent (was triggered in: "+enclosingTypeName+")");
+            //writer.WriteLine("found a CompletionEvent (was triggered in: "+enclosingTypeName+")");
+
+            return e.IDESessionUUID;
         }
 
-        private void processBasic(StreamWriter writer, IDEEvent e)
+        private String processBasic(StreamWriter writer, IDEEvent e, out Event vsEvent)
         {
             var eventType = e.GetType().Name;
             var triggerTime = e.TriggeredAt ?? DateTime.MinValue;
+            vsEvent = new Event(eventType);
 
-            writer.WriteLine("found an " + eventType + " that has been triggered at: " + triggerTime + ")");
+            //writer.WriteLine("found an " + eventType + " that has been triggered at: " + triggerTime + ")");
+
+            return e.IDESessionUUID;
         }
 
         private void btn_run_Click(object sender, EventArgs e)
