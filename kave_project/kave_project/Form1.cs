@@ -113,14 +113,14 @@ namespace kave_project
                     pb_file_progress.Value += progressPortion;
                 }
 
-                foreach (KeyValuePair<string, Developer> entry in developers)
-                {
-                    developer = entry.Value;
+                //foreach (KeyValuePair<string, Developer> entry in developers)
+                //{
+                //    developer = entry.Value;
 
-                    developer.writeEvents(writer);
-                }
+                //    developer.writeEvents(writer);
+                //}
 
-                writer.WriteLine("Developer Count: " + developers.Count.ToString());
+                //writer.WriteLine("Developer Count: " + developers.Count.ToString());
             }
             watch.Stop();
             pb_file_progress.Value = 100;
@@ -178,17 +178,20 @@ namespace kave_project
         {
             CommandEvent ce = e as CommandEvent;
             CompletionEvent compE = e as CompletionEvent;
+            ActivityEvent actE = e as ActivityEvent;
+
             String developerId = "";
 
             if (ce != null) developerId = process(writer, ce,out vsEvent);
-            //else if (compE != null) process(writer, compE);
+            else if (compE != null) developerId = process(writer, compE,out vsEvent);
             else developerId = processBasic(writer, e,out vsEvent);
             return developerId;
         }
 
         private String process(StreamWriter writer, CommandEvent ce, out Event cmd)
         {
-            //writer.WriteLine("found a CommandEvent (id: " + ce.CommandId + ")");
+            if(ce.IDESessionUUID == "a01e375b-1a26-45d9-ab18-c673ae65b6bf")
+                writer.WriteLine("found a CommandEvent (id: " + ce.CommandId + ") by "+ ce.IDESessionUUID + " at "+ce.TriggeredAt);
             cmd = new Command(ce.CommandId);
             cmd.triggeredAt = ce.TriggeredAt;
             
@@ -199,7 +202,7 @@ namespace kave_project
         {
             var snapshotOfEnclosingType = e.Context2.SST;
             var enclosingTypeName = snapshotOfEnclosingType.EnclosingType.FullName;
-            vsEvent = new Event("temp");
+            vsEvent = new Event(enclosingTypeName);
 
             //writer.WriteLine("found a CompletionEvent (was triggered in: "+enclosingTypeName+")");
 

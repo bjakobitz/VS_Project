@@ -23,7 +23,7 @@ namespace kave_project
             _count++;
         }
 
-        public String ToString()
+        public override String ToString()
         {
             return "executed command: " + name + " at " + triggeredAt;
         }

@@ -20,7 +20,8 @@ namespace kave_project
             _name = name;
         }
 
-        public String ToString()
+        
+        public override String ToString()
         {
             return "executed event: " + name + " at " + triggeredAt;
         }
