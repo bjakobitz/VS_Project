@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace kave_project
 {
-    class Command : Event
+    class NavCmd : Event
     {
         private int _count;
+        private String _target;
 
         public int count { get { return _count; } private set {} }
+        public String target { get { return _target; } set { _target = value; } }
         
-        public Command(String name)
+        public NavCmd(String name)
         {
             _name = name;
             _count = 1;
@@ -25,7 +27,7 @@ namespace kave_project
 
         public override String ToString()
         {
-            return "executed\tcommand\t" + name + "\tat\t" + triggeredAt;
+            return "executed\tcommand\t" + name + "\tat\t" + triggeredAt + "\ttarget\t" + target;
         }
     }
 }

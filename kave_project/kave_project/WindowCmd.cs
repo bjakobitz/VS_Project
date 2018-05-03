@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 namespace kave_project
 {
-    class Command : Event
+    class WindowCmd : Event
     {
         private int _count;
+        private String _windowName;
 
         public int count { get { return _count; } private set {} }
+        public String windowName { get { return _windowName; } set { _windowName = value; } }
         
-        public Command(String name)
+        public WindowCmd(String name)
         {
             _name = name;
             _count = 1;
+            _windowName = "null";
         }
 
         public void incrementCount()
@@ -25,7 +28,7 @@ namespace kave_project
 
         public override String ToString()
         {
-            return "executed\tcommand\t" + name + "\tat\t" + triggeredAt;
+            return "executed\twindow command\t" + name + "\tat\t" + triggeredAt + "\twindow\t"+_windowName;
         }
     }
 }

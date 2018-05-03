@@ -1,5 +1,6 @@
 ﻿using KaVE.Commons.Model.Events;
 using KaVE.Commons.Model.Events.CompletionEvents;
+using KaVE.Commons.Model.Events.VisualStudio;
 using KaVE.Commons.Utils.Collections;
 using KaVE.Commons.Utils.IO.Archives;
 using System;
@@ -29,9 +30,6 @@ namespace kave_project
             int progressPortion;
             Stopwatch watch = new Stopwatch();
             Dictionary<String,Developer> developers = new Dictionary<String,Developer>();
-            Object[] row;
-            int total_cmds = 0;
-            int total = 0;
             String developerId;
             Event vsEvent;
             Developer developer;
@@ -43,110 +41,80 @@ namespace kave_project
             pb_file_progress.Value = 0;
             pb_quick.Value = 0;
 
-            using (StreamWriter writer = new StreamWriter(tb_output.Text, false))
+
+            /*
+                * Each .zip that is contained in the eventsDir represents all events
+                * that we have collected for a specific user, the folder represents the
+                * first day when the user uploaded data.
+                */
+            var userZips = FindUserZips(eventsDir);
+
+            progressPortion = 100 / userZips.Count;
+
+            watch.Start();
+            foreach (var userZip in userZips)
             {
-                /*
-                 * Each .zip that is contained in the eventsDir represents all events
-                 * that we have collected for a specific user, the folder represents the
-                 * first day when the user uploaded data.
-                 */
-                var userZips = FindUserZips(eventsDir);
+                Console.Write("\n#### processing user zip: {0} #####\n", userZip);
 
-                progressPortion = 100 / userZips.Count;
-
-                watch.Start();
-                foreach (var userZip in userZips)
+                // open the .zip file ...
+                using (IReadingArchive ra = new ReadingArchive(Path.Combine(eventsDir, userZip)))
                 {
-                    Console.Write("\n#### processing user zip: {0} #####\n", userZip);
-
-                    // open the .zip file ...
-                    using (IReadingArchive ra = new ReadingArchive(Path.Combine(eventsDir, userZip)))
+                    // ... and iterate over content.
+                    while (ra.HasNext())
                     {
-                        // ... and iterate over content.
-                        while (ra.HasNext())
+                        /*
+                            * within the userZip, each stored event is contained as a
+                            * single file that contains the Json representation of a
+                            * subclass of IDEEvent.
+                            */
+                        var e = ra.GetNext<IDEEvent>();
+
+                        // the events can then be processed individually
+                        if (pb_quick.Value == 100) 
+                            pb_quick.Value = 0;
+                        developerId = process(e,out vsEvent);
+
+                        developers.TryGetValue(developerId, out developer);
+
+                        if (developer == null)
                         {
-                            /*
-                             * within the userZip, each stored event is contained as a
-                             * single file that contains the Json representation of a
-                             * subclass of IDEEvent.
-                             */
-                            var e = ra.GetNext<IDEEvent>();
-
-                            // the events can then be processed individually
-                            if (pb_quick.Value == 100) 
-                                pb_quick.Value = 0;
-                            developerId = process(writer,e,out vsEvent);
-
-                            developers.TryGetValue(developerId, out developer);
-
-                            if (developer == null)
-                            {
-                                developer = new Developer(developerId);
-                                developer.addEvent(vsEvent);
-                                developers.Add(developerId, developer);
-                            }
-                            else
-                            {
-                                developer.addEvent(vsEvent);
-                            }
-                            //if (cmd.Length > 0)
-                            //{
-                            //    commands.TryGetValue(cmd, out command);
-                            //    if (command == null)
-                            //    {
-                            //        command = new Command(cmd);
-                            //        commands.Add(cmd, command);
-                            //    }
-                            //    else
-                            //    {
-                            //        command.incrementCount();
-                            //    }
-                            //}
-
-                            pb_quick.Value += 1;
-                            lbl_time.Text = watch.Elapsed.ToString(@"hh\:mm\:ss");
-                            writer.Flush();
-                            Application.DoEvents();
+                            developer = new Developer(developerId);
+                            developer.addEvent(vsEvent);
+                            developers.Add(developerId, developer);
                         }
+                        else
+                        {
+                            developer.addEvent(vsEvent);
+                        }
+
+                        pb_quick.Value += 1;
+                        lbl_time.Text = watch.Elapsed.ToString(@"hh\:mm\:ss");
+                            
+                        Application.DoEvents();
                     }
-                    
-                    pb_file_progress.Value += progressPortion;
                 }
-
-                //foreach (KeyValuePair<string, Developer> entry in developers)
-                //{
-                //    developer = entry.Value;
-
-                //    developer.writeEvents(writer);
-                //}
-
-                //writer.WriteLine("Developer Count: " + developers.Count.ToString());
+                    
+                pb_file_progress.Value += progressPortion;
             }
+
+            using(StreamWriter writer = new StreamWriter(tb_output + "\\summaries.csv")){
+                foreach (KeyValuePair<string, Developer> entry in developers)
+                {
+                    developer = entry.Value;
+                    developer.writeEvents(tb_output.Text);
+
+                    writer.WriteLine("Developer: " + developer.session_id);
+                    foreach(String summary in developer.summaries)
+                    {
+                        writer.WriteLine("\t" + summary);
+                    }
+                }
+            }
+
             watch.Stop();
             pb_file_progress.Value = 100;
             lbl_time.Text = watch.Elapsed.ToString(@"hh\:mm\:ss");
 
-            
-
-            //foreach (KeyValuePair<string, Command> entry in commands)
-            //{
-            //    command = entry.Value;
-            //    row = new object[2];
-            //    row[0] = command.name;
-            //    row[1] = command.count;
-            //    dgv_counts.Rows.Add(row);
-            //    total_cmds++;
-            //}
-
-            //row = new object[2];
-            //row[0] = "Total Commands";
-            //row[1] = total_cmds;
-            //dgv_counts.Rows.Add(row);
-
-            //row = new object[2];
-            //row[0] = "Total";
-            //row[1] = total;
-            //dgv_counts.Rows.Add(row);
             btn_run.Enabled = true;
         }
 
@@ -174,42 +142,77 @@ namespace kave_project
              * get rid of the casting. For now, this is recommended way to access the
              * contents.
              */
-        private String process(StreamWriter writer, IDEEvent e,out Event vsEvent)
+        private String process(IDEEvent e,out Event vsEvent)
         {
             CommandEvent ce = e as CommandEvent;
             CompletionEvent compE = e as CompletionEvent;
-            ActivityEvent actE = e as ActivityEvent;
+            DocumentEvent docE = e as DocumentEvent;
+            WindowEvent winE = e as WindowEvent;
+            NavigationEvent navE = e as NavigationEvent;
 
             String developerId = "";
 
-            if (ce != null) developerId = process(writer, ce,out vsEvent);
-            else if (compE != null) developerId = process(writer, compE,out vsEvent);
-            else developerId = processBasic(writer, e,out vsEvent);
+            if (ce != null) developerId = process(ce, out vsEvent);
+            else if (docE != null) developerId = process(docE, out vsEvent);
+            else if (winE != null) developerId = process(winE, out vsEvent);
+            else if (navE != null) developerId = process(navE, out vsEvent);
+            else developerId = processBasic(e, out vsEvent);
             return developerId;
         }
 
-        private String process(StreamWriter writer, CommandEvent ce, out Event cmd)
+        private String process(CommandEvent ce, out Event cmd)
         {
-            if(ce.IDESessionUUID == "a01e375b-1a26-45d9-ab18-c673ae65b6bf")
-                writer.WriteLine("found a CommandEvent (id: " + ce.CommandId + ") by "+ ce.IDESessionUUID + " at "+ce.TriggeredAt);
+            //writer.WriteLine("found a CommandEvent (id: " + ce.CommandId + ")");
             cmd = new Command(ce.CommandId);
             cmd.triggeredAt = ce.TriggeredAt;
             
             return ce.IDESessionUUID;
         }
 
-        private String process(StreamWriter writer, CompletionEvent e,out Event vsEvent)
+        private String process(DocumentEvent de, out Event cmd)
         {
-            var snapshotOfEnclosingType = e.Context2.SST;
-            var enclosingTypeName = snapshotOfEnclosingType.EnclosingType.FullName;
-            vsEvent = new Event(enclosingTypeName);
+            //writer.WriteLine("found a CommandEvent (id: " + ce.CommandId + ")");
+            cmd = new DocuemntCmd(de.Action.ToString());
+            if(de.Document != null)
+                ((DocuemntCmd)cmd).docName = de.Document.FileName;
+            if(de.ActiveDocument != null)
+                ((DocuemntCmd)cmd).docName = de.ActiveDocument.FileName;
+            cmd.triggeredAt = de.TriggeredAt;
 
-            //writer.WriteLine("found a CompletionEvent (was triggered in: "+enclosingTypeName+")");
+            return de.IDESessionUUID;
+        }
+        private String process(WindowEvent we, out Event cmd)
+        {
+            //writer.WriteLine("found a CommandEvent (id: " + ce.CommandId + ")");
+            cmd = new WindowCmd(we.Action.ToString());
+            if(we.Window != null)
+                ((WindowCmd)cmd).windowName = we.Window.Caption;
+            cmd.triggeredAt = we.TriggeredAt;
 
-            return e.IDESessionUUID;
+            return we.IDESessionUUID;
         }
 
-        private String processBasic(StreamWriter writer, IDEEvent e, out Event vsEvent)
+        private String process(NavigationEvent ne, out Event cmd)
+        {
+            //writer.WriteLine("found a CommandEvent (id: " + ce.CommandId + ")");
+            cmd = new NavCmd(ne.TypeOfNavigation.ToString());
+            ((NavCmd)cmd).target = ne.Target.Identifier;
+            cmd.triggeredAt = ne.TriggeredAt;
+
+            return ne.IDESessionUUID;
+        }
+        //private String process(StreamWriter writer, CompletionEvent e,out Event vsEvent)
+        //{
+        //    var snapshotOfEnclosingType = e.Context2.SST;
+        //    var enclosingTypeName = snapshotOfEnclosingType.EnclosingType.FullName;
+        //    vsEvent = new Event(enclosingTypeName);
+
+        //    //writer.WriteLine("found a CompletionEvent (was triggered in: "+enclosingTypeName+")");
+
+        //    return e.IDESessionUUID;
+        //}
+
+        private String processBasic(IDEEvent e, out Event vsEvent)
         {
             var eventType = e.GetType().Name;
             var triggerTime = e.TriggeredAt ?? DateTime.MinValue;
@@ -240,12 +243,12 @@ namespace kave_project
         private void btn_output_browse_Click(object sender, EventArgs e)
         {
             DialogResult result;
-            SaveFileDialog dialog = new SaveFileDialog();
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
 
             result = dialog.ShowDialog(this);
 
             if (result == System.Windows.Forms.DialogResult.OK)
-                tb_output.Text = dialog.FileName;
+                tb_output.Text = dialog.SelectedPath;
         }
     }
 }

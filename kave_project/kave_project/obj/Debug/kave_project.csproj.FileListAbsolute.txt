@@ -28,7 +28,6 @@ D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\Newtonsoft.Json
 D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\DotNetZip.xml
 D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\ICSharpCode.SharpZipLib.xml
 D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Debug\Newtonsoft.Json.xml
-D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.csprojResolveAssemblyReference.cache
 D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.Form1.resources
 D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.Properties.Resources.resources
 D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Debug\kave_project.csproj.GenerateResource.Cache

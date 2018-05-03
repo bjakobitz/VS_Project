@@ -23,7 +23,7 @@ namespace kave_project
         
         public override String ToString()
         {
-            return "executed event: " + name + " at " + triggeredAt;
+            return "executed\tevent\t" + name + "\tat\t" + triggeredAt;
         }
     }
 }

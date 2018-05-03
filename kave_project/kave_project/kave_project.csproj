@@ -65,6 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="NavCmd.cs" />
+    <Compile Include="WindowCmd.cs" />
+    <Compile Include="DocumentCmd.cs" />
     <Compile Include="Developer.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Form1.cs">

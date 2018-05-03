@@ -1,0 +1,16 @@
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\kave_project.exe.config
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\kave_project.exe
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\kave_project.pdb
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\Antlr4.Runtime.Standard.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\DotNetZip.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\ICSharpCode.SharpZipLib.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\KaVE.Commons.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\Newtonsoft.Json.dll
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\DotNetZip.xml
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\ICSharpCode.SharpZipLib.xml
+D:\git\vs_project\VS_Project\kave_project\kave_project\bin\Release\Newtonsoft.Json.xml
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.Form1.resources
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.Properties.Resources.resources
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.csproj.GenerateResource.Cache
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.exe
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.pdb
