@@ -31,7 +31,7 @@ namespace kave_project
             Stopwatch watch = new Stopwatch();
             Dictionary<String,Developer> developers = new Dictionary<String,Developer>();
             String developerId;
-            Event vsEvent;
+            Completion comEvent;
             Developer developer;
 
             btn_run.Enabled = false;
@@ -72,21 +72,23 @@ namespace kave_project
                         // the events can then be processed individually
                         if (pb_quick.Value == 100) 
                             pb_quick.Value = 0;
-                        developerId = process(e,out vsEvent);
+                        developerId = process(e,out comEvent);
 
-                        developers.TryGetValue(developerId, out developer);
-
-                        if (developer == null)
+                        if (comEvent != null)
                         {
-                            developer = new Developer(developerId);
-                            developer.addEvent(vsEvent);
-                            developers.Add(developerId, developer);
-                        }
-                        else
-                        {
-                            developer.addEvent(vsEvent);
-                        }
+                            developers.TryGetValue(developerId, out developer);
 
+                            if (developer == null)
+                            {
+                                developer = new Developer(developerId);
+                                developer.addEvent(comEvent);
+                                developers.Add(developerId, developer);
+                            }
+                            else
+                            {
+                                developer.addEvent(comEvent);
+                            }
+                        }
                         pb_quick.Value += 1;
                         lbl_time.Text = watch.Elapsed.ToString(@"hh\:mm\:ss");
                             
@@ -97,19 +99,53 @@ namespace kave_project
                 pb_file_progress.Value += progressPortion;
             }
 
-            using(StreamWriter writer = new StreamWriter(tb_output + "\\summaries.csv")){
+            using (StreamWriter writer = new StreamWriter(tb_output.Text + "\\summaries.csv"))
+            {
+                TimeSpan total_time = new TimeSpan(0, 0, 0);
+                TimeSpan total_approved = new TimeSpan(0, 0, 0);
+                TimeSpan total_canceled = new TimeSpan(0, 0, 0);
+                TimeSpan total_filtered = new TimeSpan(0, 0, 0);
+                TimeSpan total_dev_time = new TimeSpan(0,0,0);
+                
                 foreach (KeyValuePair<string, Developer> entry in developers)
                 {
                     developer = entry.Value;
+                    writer.WriteLine("Developer "+ developer.session_id);
+                    developer.runStats();
                     developer.writeEvents(tb_output.Text);
 
-                    writer.WriteLine("Developer: " + developer.session_id);
-                    foreach(String summary in developer.summaries)
-                    {
-                        writer.WriteLine("\t" + summary);
-                    }
+                    writer.WriteLine("Total time per dev " + developer.total_time.ToString(@"hh\:mm\:ss\:fff"));
+                    
+
+                    total_time = total_time.Add(developer.total_time);
+                    total_approved = total_approved.Add(developer.total_approved);
+                    total_canceled = total_canceled.Add(developer.total_canceled);
+                    total_filtered = total_filtered.Add(developer.total_filtered);
+                    total_dev_time = total_dev_time.Add(developer.total_span);
                 }
+
+                writer.WriteLine("Approved " +total_approved.ToString(@"hh\:mm\:ss\:fff"));
+                writer.WriteLine("Canceled " +total_canceled.ToString(@"hh\:mm\:ss\:fff"));
+                writer.WriteLine("Filetered " + total_filtered.ToString(@"hh\:mm\:ss\:fff"));
+                writer.WriteLine("Total time " + total_time.ToString(@"hh\:mm\:ss\:fff"));
+                writer.WriteLine("Total Dev Time " + total_dev_time.ToString(@"hh\:mm\:ss\:fff"));
             }
+            //using(StreamWriter writer = new StreamWriter(tb_output.Text + "\\summaries.csv")){
+            //    foreach (KeyValuePair<string, Developer> entry in developers)
+            //    {
+            //        developer = entry.Value;
+            //        if (developer.eventsLists.Count > 0)
+            //        {
+            //            developer.writeEvents(tb_output.Text);
+
+            //            writer.WriteLine("Developer: " + developer.session_id);
+            //            foreach (String summary in developer.summaries)
+            //            {
+            //                writer.WriteLine("\t" + summary);
+            //            }
+            //        }
+            //    }
+            //}
 
             watch.Stop();
             pb_file_progress.Value = 100;
@@ -142,21 +178,25 @@ namespace kave_project
              * get rid of the casting. For now, this is recommended way to access the
              * contents.
              */
-        private String process(IDEEvent e,out Event vsEvent)
+        private String process(IDEEvent e,out Completion vsEvent)
         {
             CommandEvent ce = e as CommandEvent;
             CompletionEvent compE = e as CompletionEvent;
             DocumentEvent docE = e as DocumentEvent;
             WindowEvent winE = e as WindowEvent;
             NavigationEvent navE = e as NavigationEvent;
+            
 
             String developerId = "";
 
-            if (ce != null) developerId = process(ce, out vsEvent);
-            else if (docE != null) developerId = process(docE, out vsEvent);
-            else if (winE != null) developerId = process(winE, out vsEvent);
-            else if (navE != null) developerId = process(navE, out vsEvent);
-            else developerId = processBasic(e, out vsEvent);
+
+            if (compE != null) 
+                developerId = process(compE, out vsEvent);
+            //if (ce != null) developerId = process(ce, out vsEvent);
+            //else if (docE != null) developerId = process(docE, out vsEvent);
+            //else if (winE != null) developerId = process(winE, out vsEvent);
+            //else if (navE != null) developerId = process(navE, out vsEvent);
+            else vsEvent = null;//developerId = processBasic(e, out vsEvent);
             return developerId;
         }
 
@@ -201,16 +241,18 @@ namespace kave_project
 
             return ne.IDESessionUUID;
         }
-        //private String process(StreamWriter writer, CompletionEvent e,out Event vsEvent)
-        //{
-        //    var snapshotOfEnclosingType = e.Context2.SST;
-        //    var enclosingTypeName = snapshotOfEnclosingType.EnclosingType.FullName;
-        //    vsEvent = new Event(enclosingTypeName);
+        private String process(CompletionEvent e, out Completion vsEvent)
+        {
+            var snapshotOfEnclosingType = e.Context2.SST;
+            var enclosingTypeName = snapshotOfEnclosingType.EnclosingType.FullName;
+            vsEvent = new Completion(enclosingTypeName);
+            vsEvent.cEvent = e;
+            
 
-        //    //writer.WriteLine("found a CompletionEvent (was triggered in: "+enclosingTypeName+")");
+            //writer.WriteLine("found a CompletionEvent (was triggered in: "+enclosingTypeName+")");
 
-        //    return e.IDESessionUUID;
-        //}
+            return e.IDESessionUUID;
+        }
 
         private String processBasic(IDEEvent e, out Event vsEvent)
         {

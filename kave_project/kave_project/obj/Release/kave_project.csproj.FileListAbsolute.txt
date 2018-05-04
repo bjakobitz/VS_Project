@@ -14,3 +14,4 @@ D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.
 D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.csproj.GenerateResource.Cache
 D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.exe
 D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.pdb
+D:\git\vs_project\VS_Project\kave_project\kave_project\obj\Release\kave_project.csprojResolveAssemblyReference.cache
